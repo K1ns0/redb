@@ -19,7 +19,7 @@
     * [Exchange Server远程代码执行漏洞](ExchangeServer-rce-CVE-2020-16875.md)
     * [Apache DolphinScheduler权限覆盖漏洞](DolphinScheduler-privilegeoverride-CVE-2020-13922.md)
     * [Netlogon 特权提升漏洞](Netlogon-privilege_escalation-CVE-2020-1472.md)
-    * [Apache ActiveMQ远程代码执行0day]()
+    * Apache ActiveMQ远程代码执行0day
     * [Mssql远程代码执行](Mssql-rce-CVE-2020-0618.md)
     * [IBM WebSphere存在XXE外部实体注入漏洞](WebSphere-xxe-CVE-2020-4643.md)
     * [Joomla! paGO Commerce 2.5.9.0 存在SQL注入](Joomla-sqli.md)
@@ -34,7 +34,7 @@
     * [深信服EDR RCE漏洞](SangForEDR-rce.md)
     * [深信服SSL VPN任意密码重置](Sangfor-resetpassword.md)
     * [深信服SSL VPN 修改绑定手机号](Sangfor-changephone.md)
-    * [深信服 SSL VPN 远程代码执行漏洞（暂无）]()
+    * 深信服 SSL VPN 远程代码执行漏洞（暂无）
     * [天融信TopApp-LB sql注入漏洞](TOPSEC-sqli.md)
     * [天融信数据防泄漏系统越权修改管理员密码漏洞](TOPSEC-yuequan.md)
     * [绿盟UTS绕过登录漏洞](nsfocusUTS-unauthorized.md)

